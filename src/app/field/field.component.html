@@ -1,22 +1,30 @@
-<div class="field">
-  <div class="grid-row" *ngFor="let row of backgroundGrid">
-    <div *ngFor="let tile of row"
+<div class="field-wrapper">
+  <div class="field">
+    <div class="grid-row" *ngFor="let row of backgroundGrid">
+      <div
+        *ngFor="let tile of row"
         [style.height.px]="tileHeight"
         [style.width.px]="tileWidth"
-        class="grid-tile">
-      <div class="fill"></div>
+        class="grid-tile"
+      >
+        <div class="fill"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="row" *ngFor="let row of fieldView; let rowIndex = index">
-    <div *ngFor="let tile of row; let tileIndex = index"
-      [@tile]="animationsView[rowIndex][tileIndex]"
-      [style.height.px]="tileHeight"
-      [style.width.px]="tileWidth"
-      [style.top.px]="rowIndex * tileHeight"
-      [style.left.px]="tileIndex * tileWidth"
-      class="tile">
-      <div class="fill" [ngClass]="'-color-' + tile">{{ tile ? tile : '' }}</div>
+    <div class="row" *ngFor="let row of fieldView; let rowIndex = index">
+      <div
+        *ngFor="let tile of row; let tileIndex = index"
+        [@tile]="animationsView[rowIndex][tileIndex]"
+        [style.height.px]="tileHeight"
+        [style.width.px]="tileWidth"
+        [style.top.px]="rowIndex * tileHeight"
+        [style.left.px]="tileIndex * tileWidth"
+        class="tile"
+      >
+        <div class="fill" [ngClass]="'-color-' + tile">
+          {{ tile ? tile : "" }}
+        </div>
+      </div>
     </div>
   </div>
 </div>

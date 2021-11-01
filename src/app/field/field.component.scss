@@ -4,6 +4,14 @@
   align-items: center;
 }
 
+.field-wrapper {
+  padding: 15px;
+
+  background-color: #baac9f;
+
+  border-radius: 6px;
+}
+
 .field {
   position: relative;
 }
@@ -18,7 +26,7 @@
   display: flex;
   padding: 4px;
   .fill {
-    background: #aaaaaa;
+    background: #ccc0b3;
     border-radius: 4px;
     flex-grow: 1;
   }
@@ -42,44 +50,54 @@
     justify-content: center;
     align-items: center;
     &.-color-2 {
-      background: #34aab0;
+      background: #ede3da;
     }
     &.-color-4 {
-      background: #26b09a;
+      background: #ede0c8;
     }
     &.-color-8 {
-      background: #40b795;
+      background: #f2b179;
+      color: white;
     }
     &.-color-16 {
-      background: #35b071;
+      background: #f59563;
+      color: white;
     }
     &.-color-32 {
-      background: #32b03d;
+      background: #f67c5f;
+      color: white;
     }
     &.-color-64 {
-      background: #73b034;
+      background: #f65e3b;
+      color: white;
     }
     &.-color-128 {
-      background: #9fb02d;
+      background: #eecc61;
+      color: white;
     }
     &.-color-256 {
-      background: #b09d37;
+      background: #eecc61;
+      color: white;
     }
     &.-color-512 {
-      background: #b07035;
+      background: #eecc61;
+      color: white;
     }
     &.-color-1024 {
-      background: #b05430;
+      background: #eecc61;
+      color: white;
     }
     &.-color-2048 {
-      background: #b03d47;
+      background: #eecc61;
+      color: white;
     }
     &.-color-4096 {
-      background: #b04489;
+      background: #eecc61;
+      color: white;
     }
     &.-color-8192 {
-      background: #ab18b0;
+      background: #eecc61;
+      color: white;
     }
   }
 }
-
