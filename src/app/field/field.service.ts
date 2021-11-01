@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { AppState } from '../ngrx/app.state';
+import { edit } from '../ngrx/score/score.actions';
 import { Direction } from './enums/direction';
 import { MergeMovement } from './enums/mergeMovement';
 import { FieldHelper } from './fieldHelper';
@@ -40,9 +43,8 @@ export class FieldService {
   private hasLostSource: Subject<boolean> = new Subject();
   public readonly hasLost$: Observable<boolean> =
     this.hasLostSource.asObservable();
-  public score: number = 0;
 
-  constructor() {}
+  constructor(private _store: Store) {}
 
   public move(direction: Direction) {
     this.mergeGuard = <Coordinate[]>[];
@@ -71,13 +73,13 @@ export class FieldService {
   }
 
   private calculateScore() {
-    this.score = [].concat
+    const score = [].concat
       .apply([], this.field as unknown as ConcatArray<never>[])
       .reduce((acc, cur) => {
         return acc + cur;
       }, 0);
 
-    // TODO : update score in store
+    this._store.dispatch(edit({ score }));
   }
 
   private updateAnimations(
