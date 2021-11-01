@@ -40,7 +40,6 @@ export class FieldService {
   private hasLostSource: Subject<boolean> = new Subject();
   public readonly hasLost$: Observable<boolean> =
     this.hasLostSource.asObservable();
-  public score: number = 0;
 
   constructor() {}
 
@@ -71,7 +70,7 @@ export class FieldService {
   }
 
   private calculateScore() {
-    this.score = [].concat
+    const score = [].concat
       .apply([], this.field as unknown as ConcatArray<never>[])
       .reduce((acc, cur) => {
         return acc + cur;
