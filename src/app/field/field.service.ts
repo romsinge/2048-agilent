@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { AppState } from '../ngrx/app.state';
 import { edit } from '../ngrx/score/score.actions';
 import { Direction } from './enums/direction';
 import { MergeMovement } from './enums/mergeMovement';
