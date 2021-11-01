@@ -11,7 +11,7 @@ export const size = 4;
 const winningNumber = 2048;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FieldService {
   private mergeGuard: Coordinate[];
@@ -25,48 +25,81 @@ export class FieldService {
   // ]
   private animations: AnimationState = FieldHelper.createGrid(size, 'base');
   private fieldAnimationSource: BehaviorSubject<{
-    field: FieldState, animations: AnimationState
+    field: FieldState;
+    animations: AnimationState;
   }> = new BehaviorSubject({ field: this.field, animations: this.animations });
   public readonly field$: Observable<{
-    field: FieldState, animations: AnimationState
+    field: FieldState;
+    animations: AnimationState;
   }> = this.fieldAnimationSource.asObservable();
   private hasWon = false;
   private hasWonSource: Subject<boolean> = new Subject();
-  public readonly hasWon$: Observable<boolean> = this.hasWonSource.asObservable();
+  public readonly hasWon$: Observable<boolean> =
+    this.hasWonSource.asObservable();
   private hasLost = false;
   private hasLostSource: Subject<boolean> = new Subject();
-  public readonly hasLost$: Observable<boolean> = this.hasLostSource.asObservable();
+  public readonly hasLost$: Observable<boolean> =
+    this.hasLostSource.asObservable();
+  public score: number = 0;
 
-  constructor() { }
+  constructor() {}
 
   public move(direction: Direction) {
     this.mergeGuard = <Coordinate[]>[];
     switch (direction) {
-      case Direction.Down: this.moveDown(); break;
-      case Direction.Up: this.moveUp(); break;
-      case Direction.Left: this.moveLeft(); break;
-      case Direction.Right: this.moveRight(); break;
+      case Direction.Down:
+        this.moveDown();
+        break;
+      case Direction.Up:
+        this.moveUp();
+        break;
+      case Direction.Left:
+        this.moveLeft();
+        break;
+      case Direction.Right:
+        this.moveRight();
+        break;
     }
     this.addNewNumber();
-    this.fieldAnimationSource.next({ field: this.field, animations: this.animations });
+    this.fieldAnimationSource.next({
+      field: this.field,
+      animations: this.animations,
+    });
     this.hasWonSource.next(this.hasWon);
     this.hasLostSource.next(this.hasLost);
+    this.calculateScore();
   }
 
-  private updateAnimations(yIndex: number, xIndex: number, moveDistance: number, direction: Direction): void {
+  private calculateScore() {
+    this.score = [].concat
+      .apply([], this.field as unknown as ConcatArray<never>[])
+      .reduce((acc, cur) => {
+        return acc + cur;
+      }, 0);
+
+    // TODO : update score in store
+  }
+
+  private updateAnimations(
+    yIndex: number,
+    xIndex: number,
+    moveDistance: number,
+    direction: Direction
+  ): void {
     const animationDirectionString = 'move' + direction + '-' + moveDistance;
     this.animations[yIndex][xIndex] = animationDirectionString;
   }
 
   public resetAnimations(): AnimationState {
-    return this.animations = FieldHelper.createGrid(size, 'base');
+    return (this.animations = FieldHelper.createGrid(size, 'base'));
   }
 
   private moveDown(): void {
     // Search from bottom left and up, skip bottom row
     for (let yIndex = size - 2; yIndex >= 0; yIndex--) {
       for (let xIndex = 0; xIndex < size; xIndex++) {
-        if (this.field[yIndex][xIndex]) { // Tile got a number to move?
+        if (this.field[yIndex][xIndex]) {
+          // Tile got a number to move?
           this.mergeOrMovedDownwards(yIndex, xIndex);
         }
       }
@@ -76,10 +109,19 @@ export class FieldService {
   private mergeOrMovedDownwards(yStartIndex: number, xIndex: number): void {
     // Search for a number to merge, or move current number
     for (let searchIndex = yStartIndex; searchIndex < size; searchIndex++) {
-      let mergeResult = this.mergeOrMove(this.field, searchIndex, xIndex, Direction.Down);
+      let mergeResult = this.mergeOrMove(
+        this.field,
+        searchIndex,
+        xIndex,
+        Direction.Down
+      );
       // No more moves? Calculate moved distance.
       if (mergeResult !== MergeMovement.Moved) {
-        const md = FieldHelper.movingDistance(searchIndex, yStartIndex, mergeResult === MergeMovement.Mergerd);
+        const md = FieldHelper.movingDistance(
+          searchIndex,
+          yStartIndex,
+          mergeResult === MergeMovement.Mergerd
+        );
         this.updateAnimations(yStartIndex, xIndex, md, Direction.Down);
         break;
       }
@@ -90,7 +132,8 @@ export class FieldService {
     // Search from top left and down, skip left column
     for (let xIndex = 1; xIndex < size; xIndex++) {
       for (let yIndex = 0; yIndex < size; yIndex++) {
-        if (this.field[yIndex][xIndex]) { // Tile got a number?
+        if (this.field[yIndex][xIndex]) {
+          // Tile got a number?
           this.mergeOrMoveLeft(xIndex, yIndex);
         }
       }
@@ -100,10 +143,19 @@ export class FieldService {
   private mergeOrMoveLeft(xStartIndex: number, yIndex: number) {
     // Search for a number to merge or move current number
     for (let searchIndex = xStartIndex; searchIndex >= 0; searchIndex--) {
-      let mergeResult = this.mergeOrMove(this.field, yIndex, searchIndex, Direction.Left);
+      let mergeResult = this.mergeOrMove(
+        this.field,
+        yIndex,
+        searchIndex,
+        Direction.Left
+      );
       // No more moves? Calculate moved distance.
       if (mergeResult !== MergeMovement.Moved) {
-        const md = FieldHelper.movingDistance(xStartIndex, searchIndex, mergeResult === MergeMovement.Mergerd);
+        const md = FieldHelper.movingDistance(
+          xStartIndex,
+          searchIndex,
+          mergeResult === MergeMovement.Mergerd
+        );
         this.updateAnimations(yIndex, xStartIndex, md, Direction.Left);
         break;
       }
@@ -114,7 +166,8 @@ export class FieldService {
     // Search from top right and down, skip right column
     for (let yIndex = 0; yIndex < size; yIndex++) {
       for (let xIndex = size - 2; xIndex >= 0; xIndex--) {
-        if (this.field[yIndex][xIndex]) { // Tile got a number?
+        if (this.field[yIndex][xIndex]) {
+          // Tile got a number?
           this.mergeOrMoveRight(xIndex, yIndex);
         }
       }
@@ -124,10 +177,19 @@ export class FieldService {
   private mergeOrMoveRight(xStartIndex: number, yIndex: number): void {
     // Search for a number to merge or move current number
     for (let searchIndex = xStartIndex; searchIndex < size; searchIndex++) {
-      let mergeResult = this.mergeOrMove(this.field, yIndex, searchIndex, Direction.Right);
+      let mergeResult = this.mergeOrMove(
+        this.field,
+        yIndex,
+        searchIndex,
+        Direction.Right
+      );
       // No more moves? Calculate moved distance.
       if (mergeResult !== MergeMovement.Moved) {
-        const md = FieldHelper.movingDistance(searchIndex, xStartIndex, mergeResult === MergeMovement.Mergerd);
+        const md = FieldHelper.movingDistance(
+          searchIndex,
+          xStartIndex,
+          mergeResult === MergeMovement.Mergerd
+        );
         this.updateAnimations(yIndex, xStartIndex, md, Direction.Right);
         break;
       }
@@ -138,7 +200,8 @@ export class FieldService {
     // Search from top left and down, skip top row
     for (let yIndex = 1; yIndex < size; yIndex++) {
       for (let xIndex = 0; xIndex < size; xIndex++) {
-        if (this.field[yIndex][xIndex]) { // Tile got a number?
+        if (this.field[yIndex][xIndex]) {
+          // Tile got a number?
           this.mergeOrMoveUp(yIndex, xIndex);
         }
       }
@@ -148,24 +211,39 @@ export class FieldService {
   private mergeOrMoveUp(yStartIndex: number, xIndex: number): void {
     // Search for a number to merge or move current number
     for (let searchIndex = yStartIndex; searchIndex >= 0; searchIndex--) {
-      let mergeResult = this.mergeOrMove(this.field, searchIndex, xIndex, Direction.Up);
+      let mergeResult = this.mergeOrMove(
+        this.field,
+        searchIndex,
+        xIndex,
+        Direction.Up
+      );
       // No more moves? Calculate moved distance.
       if (mergeResult !== MergeMovement.Moved) {
-        const md = FieldHelper.movingDistance(yStartIndex, searchIndex, mergeResult === MergeMovement.Mergerd);
+        const md = FieldHelper.movingDistance(
+          yStartIndex,
+          searchIndex,
+          mergeResult === MergeMovement.Mergerd
+        );
         this.updateAnimations(yStartIndex, xIndex, md, Direction.Up);
         break;
       }
     }
   }
 
-  private mergeOrMove(field: FieldState, yIndex: number, xIndex: number, direction: Direction): MergeMovement {
+  private mergeOrMove(
+    field: FieldState,
+    yIndex: number,
+    xIndex: number,
+    direction: Direction
+  ): MergeMovement {
     const tileValue = field[yIndex][xIndex];
     // Calculate destination coordinates
     const yDestIndex = FieldHelper.calcYDestIndex(direction, yIndex);
     const xDestIndex = FieldHelper.calcXDestIndex(direction, xIndex);
     if (FieldHelper.isInBounds(xDestIndex, yDestIndex, size)) {
-
-      const isMerged = !!this.mergeGuard.find(c => c.x === xDestIndex && c.y === yDestIndex);
+      const isMerged = !!this.mergeGuard.find(
+        (c) => c.x === xDestIndex && c.y === yDestIndex
+      );
       const destEmpty = !field[yDestIndex][xDestIndex];
       const mergeable = field[yDestIndex][xDestIndex] === tileValue;
       switch (true) {
@@ -177,7 +255,9 @@ export class FieldService {
           field[yIndex][xIndex] = 0;
           return MergeMovement.Moved;
         case mergeable:
-          const mergedNumber = FieldHelper.mergeNumber(field[yDestIndex][xDestIndex]);
+          const mergedNumber = FieldHelper.mergeNumber(
+            field[yDestIndex][xDestIndex]
+          );
           if (mergedNumber === winningNumber) {
             this.hasWon = true;
           }
@@ -188,9 +268,7 @@ export class FieldService {
         default:
           return MergeMovement.NotMoved; // Not mergeable
       }
-
-    }
-    else {
+    } else {
       // Out of bounds
       return MergeMovement.NotMoved;
     }
@@ -203,7 +281,9 @@ export class FieldService {
     }
     const randomIndex = Math.floor(Math.random() * emptyCoordinates.length);
     if (emptyCoordinates.length) {
-      this.field[emptyCoordinates[randomIndex].x][emptyCoordinates[randomIndex].y] = FieldHelper.getNewNumber();
+      this.field[emptyCoordinates[randomIndex].x][
+        emptyCoordinates[randomIndex].y
+      ] = FieldHelper.getNewNumber();
     }
   }
 
@@ -238,8 +318,10 @@ export class FieldService {
     return result;
   }
 
-  private neighbourTileMatches(c: Coordinate): number { // Check all neighbouring tiles for matches. Return 1 if match
-    for (let x = Math.max(0, c.x - 1); x <= Math.min(c.x + 1, size - 1); x++) { // Check beside
+  private neighbourTileMatches(c: Coordinate): number {
+    // Check all neighbouring tiles for matches. Return 1 if match
+    for (let x = Math.max(0, c.x - 1); x <= Math.min(c.x + 1, size - 1); x++) {
+      // Check beside
       if (x === c.x) {
         continue; // Don't check startingpoint
       }
@@ -247,7 +329,8 @@ export class FieldService {
         return 1;
       }
     }
-    for (let y = Math.max(0, c.y - 1); y <= Math.min(c.y + 1, size - 1); y++) { // Check above and below
+    for (let y = Math.max(0, c.y - 1); y <= Math.min(c.y + 1, size - 1); y++) {
+      // Check above and below
       if (y === c.y) {
         continue; // Don't check startingpoint
       }
