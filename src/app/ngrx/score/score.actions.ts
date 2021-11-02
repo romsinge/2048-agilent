@@ -1,4 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 
-export const edit = createAction('[Score] Edit', props<{ score: number }>());
-export const reset = createAction('[Score] Reset');
+export enum ActionTypes {
+  Edit = '[Score] Edit',
+}
+
+export const edit = createAction(ActionTypes.Edit, props<{ score: number }>());
