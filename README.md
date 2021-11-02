@@ -1,3 +1,5 @@
+This repository is based entirely on the work of [shad0wgen](https://github.com/shad0wgen/2048). Please give them stars !
+
 # TwentyFortyEight
 
 Move and join the numbers with arrow keys. Get to 2048!
