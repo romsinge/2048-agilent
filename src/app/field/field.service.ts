@@ -47,6 +47,7 @@ export class FieldService {
 
   public move(direction: Direction) {
     this.mergeGuard = <Coordinate[]>[];
+    const previousField = JSON.parse(JSON.stringify(this.field));
     switch (direction) {
       case Direction.Down:
         this.moveDown();
@@ -61,7 +62,9 @@ export class FieldService {
         this.moveRight();
         break;
     }
-    this.addNewNumber();
+    if (this.hasMoved(previousField)) {
+      this.addNewNumber();
+    }
     this.fieldAnimationSource.next({
       field: this.field,
       animations: this.animations,
@@ -69,6 +72,10 @@ export class FieldService {
     this.hasWonSource.next(this.hasWon);
     this.hasLostSource.next(this.hasLost);
     this.calculateScore();
+  }
+
+  private hasMoved(previousField: FieldState): boolean {
+    return JSON.stringify(this.field) !== JSON.stringify(previousField);
   }
 
   private calculateScore() {
